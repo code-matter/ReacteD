@@ -12,7 +12,7 @@ import { useRouter } from 'next/router'
  * Homepage
  */
 const Home: NextPageWithLayout = () => {
-    const { setUser } = useUserStore()
+    const { name, age, setUser } = useUserStore()
     const router = useRouter()
     const handleSubmit = (data: FormData) => {
         // fetch('/api/form', { method: 'POST', body: JSON.stringify(data) })
@@ -29,7 +29,7 @@ const Home: NextPageWithLayout = () => {
             </Head>
             <main className='main'>
                 <div className='form--container'>
-                    <Form layout='vertical' onFinish={handleSubmit}>
+                    <Form layout='vertical' onFinish={handleSubmit} initialValues={{ name, age }}>
                         <div className='form--item__flex'>
                             <Form.Item name='name' label='Nom' rules={[{ required: true }]}>
                                 <Input />
