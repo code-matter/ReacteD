@@ -66,7 +66,7 @@ const React = ({ colors }: TReact) => {
                     justifyContent: 'center',
                     alignItems: 'center',
                 }}
-                onClick={handleClick}
+                onClick={color ? handleClick : () => null}
             >
                 {!color && <h1>PRÉPARE TOI!</h1>}
             </div>
