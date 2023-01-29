@@ -29,6 +29,7 @@ const React = ({ colors }: TReact) => {
     }
     const handleCancel = () => {
         setModalOpen(false)
+        router.push('/')
     }
 
     const handleClick = (event: any) => {
