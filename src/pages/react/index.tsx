@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Modal } from 'antd'
+import { useRouter } from 'next/router'
 import { MouseEventHandler, useEffect, useState } from 'react'
 // import useUserStore from 'store/user'
 
@@ -12,9 +13,9 @@ const MAX_TIME = 10000
 
 const React = ({ colors }: TReact) => {
     // const { name, age } = useUserStore()
-
+    const router = useRouter()
     const [modalOpen, setModalOpen] = useState<boolean>(false)
-    const [color, setColor] = useState('')
+    const [color, setColor] = useState<string | null>(null)
     const [time, setTime] = useState(0)
     const countDown = () =>
         setTimeout(() => {
@@ -33,8 +34,10 @@ const React = ({ colors }: TReact) => {
     const handleClick = (event: any) => {
         clearTimeout(countDown())
         if (confirm(`Votre reaction est de ${Date.now() - time}ms`)) {
-            setColor('#eae7ee')
+            setColor(null)
             handleOk()
+        } else {
+            router.push('/')
         }
     }
 
@@ -49,17 +52,23 @@ const React = ({ colors }: TReact) => {
         <>
             <Modal title='Mesure ton temps de réaction!' open={modalOpen} onOk={handleOk} onCancel={handleCancel}>
                 <p>
-                    Est adipisicing exercitation culpa irure irure aliqua nostrud cupidatat eiusmod anim deserunt. Anim
-                    excepteur commodo ut consequat. Anim velit exercitation occaecat deserunt ipsum do duis et dolore.
-                    Exercitation ea in veniam in quis commodo sint id reprehenderit voluptate qui. Ut aute ut elit
-                    fugiat culpa incididunt minim magna anim. Eu cupidatat ea in ad adipisicing excepteur culpa aliquip.
-                    Mollit nisi mollit ea aute aute veniam mollit occaecat commodo excepteur excepteur.
+                    Prépare-toi, une fois que tu auras cliqué sur OK, une couleur devrait apparaître d'ici 10secondes.
                     <br />
-                    <br />
-                    Si tu es prêt, clic sur OK pour commencer le test, une couleur va apparaître!
+                    Clic n'importe où dès que tu vois une couleur apparaître.
                 </p>
             </Modal>
-            <div className='react--container' style={{ backgroundColor: color }} onClick={handleClick} />
+            <div
+                className='react--container'
+                style={{
+                    backgroundColor: color ?? '',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+                onClick={handleClick}
+            >
+                {!color && <h1>PRÉPARE TOI!</h1>}
+            </div>
         </>
     )
 }

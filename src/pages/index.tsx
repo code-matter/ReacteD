@@ -28,6 +28,18 @@ const Home: NextPageWithLayout = () => {
                 <link rel='icon' href='/favicon.ico' />
             </Head>
             <main className='main'>
+                <div
+                    style={{
+                        marginBottom: 30,
+                        display: 'flex',
+                        flexFlow: 'column nowrap',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <h1>Mesure ton temps de réaction!</h1>
+                    <h3>Veuillez entrer vos informations pour commencer le test.</h3>
+                </div>
                 <div className='form--container'>
                     <Form layout='vertical' onFinish={handleSubmit} initialValues={{ name, age }}>
                         <div className='form--item__flex'>
