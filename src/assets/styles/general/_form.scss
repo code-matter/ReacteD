@@ -1,0 +1,19 @@
+form {
+    width: 100%;
+
+    .ant-form-item,
+    .ant-input,
+    .ant-input-number {
+        width: 100%;
+    }
+
+    .form--item__flex {
+        width: 100%;
+        display: flex;
+        gap: 16px;
+
+        .ant-form-item:last-child {
+            width: 33%;
+        }
+    }
+}

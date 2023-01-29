@@ -1,0 +1,17 @@
+body {
+    width: 100%;
+    min-height: 100vh;
+    background: $grey;
+}
+
+#root {
+    height: 100%;
+    width: 100%;
+}
+
+.main {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+}

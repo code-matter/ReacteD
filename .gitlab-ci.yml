@@ -1,0 +1,13 @@
+stages:
+    - test
+
+test:
+    image:
+        name: cypress/included:cypress-12.3.0-node-16.18.1-chrome-109.0.5414.74-1-ff-109.0-edge-109.0.1518.52-1
+        entrypoint: ['']
+
+    stage: test
+    script:
+        - apt-get update && apt-get -y install procps
+        - yarn install
+        - yarn e2e:headless
