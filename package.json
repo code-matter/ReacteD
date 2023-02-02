@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "@next/font": "13.1.5",
+        "@prisma/client": "^4.9.0",
         "@types/node": "18.11.18",
         "@types/react": "18.0.27",
         "@types/react-dom": "18.0.10",
@@ -41,6 +42,7 @@
         "cypress": "^12.4.0",
         "husky": "^8.0.3",
         "prettier": "^2.8.3",
+        "prisma": "^4.9.0",
         "sass": "^1.57.1",
         "start-server-and-test": "^1.15.3"
     }
