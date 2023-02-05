@@ -17,7 +17,7 @@ type THome = {
 }
 const MIN_TIME = 2000
 const MAX_TIME = 10000
-const NB_TRIES = 2
+const NB_TRIES = 5
 
 const Home: NextPageWithLayout = ({ colors, initColor }: THome & any) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false)
@@ -110,11 +110,11 @@ const Home: NextPageWithLayout = ({ colors, initColor }: THome & any) => {
                 >
                     <p>
                         Ce test est dans la cadre d'une recherche sur le temps de réaction en fonction des couleurs,
-                        veuillez notez que les données collectés sont totalement anonyme et que vous pouvez recommencer
-                        ce test autant de fois que vous voulez.
+                        veuillez noter que les données collectées sont totalement anonymes et que vous pouvez
+                        recommencer ce test autant de fois que vous voulez.
                         <br />
                         <br />
-                        Vous aurez 10 tentatives.
+                        Vous aurez {NB_TRIES} tentatives.
                         <br />
                         <br />
                         Préparez-vous, une fois que vous aurez cliqué sur OK, une couleur devrait apparaître d'ici 10

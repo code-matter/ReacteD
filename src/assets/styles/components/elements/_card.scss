@@ -1,0 +1,20 @@
+.card--container {
+    width: 100%;
+    // max-width: 340px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column nowrap;
+    padding: 8px;
+    background-color: $offwhite;
+    border-radius: 16px;
+    box-shadow: 3px 3px 6px rgba(black, 0.1);
+
+    h1 {
+        font-size: 24px;
+        line-height: 1.2em;
+        text-align: center;
+        margin: 8px 0;
+    }
+}
