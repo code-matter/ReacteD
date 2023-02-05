@@ -22,6 +22,7 @@
     "dependencies": {
         "@next/font": "13.1.5",
         "@prisma/client": "^4.9.0",
+        "@tremor/react": "^1.6.1",
         "@types/node": "18.11.18",
         "@types/react": "18.0.27",
         "@types/react-dom": "18.0.10",
@@ -29,6 +30,7 @@
         "eslint": "8.32.0",
         "eslint-config-next": "13.1.5",
         "i18next": "^22.4.9",
+        "lodash": "^4.17.21",
         "next": "13.1.5",
         "ni18n": "^1.0.5",
         "react": "18.2.0",
@@ -39,6 +41,7 @@
         "zustand": "^4.3.2"
     },
     "devDependencies": {
+        "@types/lodash": "^4.14.191",
         "cypress": "^12.4.0",
         "husky": "^8.0.3",
         "prettier": "^2.8.3",

@@ -13,6 +13,6 @@ datasource db {
 model Color {
   id String @id @default(cuid())
   color String
-  reactionTime Float
-  time BigInt
+  reactionTime Int
+  time String
 }

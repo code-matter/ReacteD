@@ -8,7 +8,6 @@ import { appWithI18Next } from 'ni18n'
 import { ReactElement, ReactNode, useEffect } from 'react'
 import useThemeStore, { ThemeStore } from 'store/theme'
 import { ni18nConfig } from '../../ni18n.config'
-
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
     getLayout?: (page: ReactElement) => ReactNode
 }

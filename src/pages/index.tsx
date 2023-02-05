@@ -33,8 +33,6 @@ const Home: NextPageWithLayout = ({ colors, initColor }: THome & any) => {
         }, Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
 
     const handleOk = () => {
-        console.log('OK')
-
         setModalOpen(false)
         countDown()
     }
@@ -47,21 +45,40 @@ const Home: NextPageWithLayout = ({ colors, initColor }: THome & any) => {
         setModalOpen(true)
     }
 
-    const handleClick = (event: any) => {
-        clearTimeout(countDown())
-        const reactionTime = Date.now() - time
-        const currentTry = tries - 1
-        if (confirm(`Votre reaction est de ${reactionTime}ms`)) {
-            setResults([...results, { color: color, rt: reactionTime }])
-            setTries(currentTry)
-            if (currentTry <= 0) {
+    const handleClick = async (event: any) => {
+        try {
+            clearTimeout(countDown())
+            const reactionTime = Date.now() - time
+            saveColor(reactionTime)
+            const currentTry = tries - 1
+            if (confirm(`Votre reaction est de ${reactionTime}ms`)) {
+                setResults([...results, { color: color, rt: reactionTime }])
+                setTries(currentTry)
+                if (currentTry <= 0) {
+                    reset()
+                    return
+                }
+                setColor(null)
+                handleOk()
+            } else {
                 reset()
-                return
             }
-            setColor(null)
-            handleOk()
-        } else {
-            reset()
+        } catch (error) {
+            throw new Error("Veuillez contacter l'administrateur")
+        }
+    }
+
+    const saveColor = async (reactionTime: number) => {
+        const response = await fetch('/api/color', {
+            method: 'POST',
+            body: JSON.stringify({
+                color,
+                reactionTime,
+                time: new Date(),
+            }),
+        })
+        if (!response.ok) {
+            throw new Error(response.statusText)
         }
     }
 
