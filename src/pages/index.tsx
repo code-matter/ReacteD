@@ -13,8 +13,8 @@ import { COLORS } from 'constants/colors'
  */
 
 type THome = {}
-const MIN_TIME = 2000
-const MAX_TIME = 10000
+const MIN_TIME = 500
+const MAX_TIME = 5000
 const NB_TRIES = 5
 
 const Home: NextPageWithLayout = ({}: THome & any) => {
