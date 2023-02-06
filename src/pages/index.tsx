@@ -5,6 +5,8 @@ import type { NextPageWithLayout } from './_app'
 import { Portal } from 'components'
 import { Modal } from 'antd'
 import { COLORS } from 'constants/colors'
+import { Color } from '@prisma/client'
+import useColorStore from 'store/color'
 
 /**
  * Component : Pages > Home
@@ -13,16 +15,16 @@ import { COLORS } from 'constants/colors'
  */
 
 type THome = {}
-const MIN_TIME = 2000
-const MAX_TIME = 10000
-const NB_TRIES = 5
+const MIN_TIME = 1000
+const MAX_TIME = 5000
+const NB_TRIES = 2
 
 const Home: NextPageWithLayout = ({}: THome & any) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false)
-    const [color, setColor] = useState<string | null>(null)
+    const [color, setColor] = useState<string>('')
     const [time, setTime] = useState(0)
     const [tries, setTries] = useState(NB_TRIES)
-    const [results, setResults] = useState<any>([])
+    const { colors, setColors } = useColorStore()
 
     const countDown = () =>
         setTimeout(() => {
@@ -38,9 +40,10 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         reset()
     }
     const reset = () => {
-        setColor(null)
+        setColor('')
         setTime(0)
         setModalOpen(true)
+        console.log('colors', colors)
     }
 
     const handleClick = async (event: any) => {
@@ -50,13 +53,12 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
             saveColor(reactionTime)
             const currentTry = tries - 1
             if (confirm(`Votre reaction est de ${reactionTime}ms`)) {
-                setResults([...results, { color: color, rt: reactionTime }])
                 setTries(currentTry)
                 if (currentTry <= 0) {
                     reset()
                     return
                 }
-                setColor(null)
+                setColor('')
                 handleOk()
             } else {
                 reset()
@@ -67,22 +69,25 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     }
 
     const saveColor = async (reactionTime: number) => {
-        const response = await fetch('/api/color', {
-            method: 'POST',
-            body: JSON.stringify({
+        try {
+            const colorToSave: Color = {
                 color,
                 reactionTime,
-                time: new Date(),
-            }),
-        })
-        if (!response.ok) {
-            throw new Error(response.statusText)
+                time: new Date().toLocaleDateString(),
+            }
+            const response = await fetch('/api/color', {
+                method: 'POST',
+                body: JSON.stringify(colorToSave),
+            })
+            setColors(await response.json())
+        } catch (error) {
+            throw new Error("Une erreur est survenue, contacter l'administrateur")
         }
     }
 
     useEffect(() => {
         setModalOpen(true)
-        setColor(null)
+        setColor('')
         return () => {
             setModalOpen(false)
         }
