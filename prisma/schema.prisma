@@ -17,3 +17,10 @@ model Color {
   reactionTime Int
   time String
 }
+
+model ColorDev {
+  id           String @id @default(cuid())
+  color        String
+  reactionTime Int
+  time         String
+}
