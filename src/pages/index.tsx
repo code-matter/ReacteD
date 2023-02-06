@@ -4,6 +4,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { NextPageWithLayout } from './_app'
 import { Portal } from 'components'
 import { Modal } from 'antd'
+import { COLORS } from 'constants/colors'
 
 /**
  * Component : Pages > Home
@@ -11,15 +12,12 @@ import { Modal } from 'antd'
  * Homepage
  */
 
-type THome = {
-    colors: string[]
-    initColor: null | string
-}
+type THome = {}
 const MIN_TIME = 2000
 const MAX_TIME = 10000
 const NB_TRIES = 5
 
-const Home: NextPageWithLayout = ({ colors, initColor }: THome & any) => {
+const Home: NextPageWithLayout = ({}: THome & any) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false)
     const [color, setColor] = useState<string | null>(null)
     const [time, setTime] = useState(0)
@@ -28,7 +26,7 @@ const Home: NextPageWithLayout = ({ colors, initColor }: THome & any) => {
 
     const countDown = () =>
         setTimeout(() => {
-            setColor(colors[Math.floor(Math.random() * colors.length)])
+            setColor(COLORS[Math.floor(Math.random() * COLORS.length)].name)
             setTime(Date.now())
         }, Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
 
@@ -127,7 +125,7 @@ const Home: NextPageWithLayout = ({ colors, initColor }: THome & any) => {
                 <div
                     className='react--container'
                     style={{
-                        backgroundColor: color ? color : initColor,
+                        backgroundColor: COLORS.find(col => col.name === color)?.hex ?? '',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -142,15 +140,6 @@ const Home: NextPageWithLayout = ({ colors, initColor }: THome & any) => {
 }
 
 export default Home
-
-export const getServerSideProps = () => {
-    return {
-        props: {
-            colors: ['#340068', '#FF6978', '#B1EDE8', '#6D435A', '#FF9F1C'],
-            initColor: null,
-        },
-    }
-}
 
 /**
  * getLayout
