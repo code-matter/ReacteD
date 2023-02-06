@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Color, PrismaClient } from '@prisma/client'
+import { Button, Form, Input } from 'antd'
 import Card from 'components/elements/Card'
 import { COLORS } from 'constants/colors'
 import _ from 'lodash'
@@ -41,10 +42,32 @@ export const getServerSideProps = async () => {
 const Dashboard = ({ colors, max }: TDashboard) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined)
+    const [isLogged, setIsLogged] = useState<boolean>(false)
     useEffect(() => {
         setContainerWidth(containerRef.current?.clientWidth)
     }, [containerRef.current])
-    console.log('max', max)
+    const handleFormSubmit = (formData: any) => {
+        const { password } = formData
+        if (!password) return
+        if (password === 'droopFPV') setIsLogged(true)
+    }
+
+    useEffect(() => {
+        return () => {
+            setIsLogged(false)
+        }
+    }, [])
+
+    if (!isLogged)
+        return (
+            <Form layout='vertical' onFinish={handleFormSubmit}>
+                <Form.Item name='password' label="Code d'accès">
+                    <Input />
+                </Form.Item>
+                <Button htmlType='submit'>Connexion</Button>
+            </Form>
+        )
+
     return (
         <div className='dashboard'>
             <Card title='Temps de réaction par couleur' ref={containerRef}>
