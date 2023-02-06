@@ -97,7 +97,6 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                 <link rel='icon' href='/favicon.ico' />
             </Head>
             <main className='main'>
-                <h1>test</h1>
                 <Modal
                     title='Mesure ton temps de réaction!'
                     open={modalOpen}
