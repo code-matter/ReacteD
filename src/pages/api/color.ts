@@ -12,7 +12,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const colorData: Color = JSON.parse(req.body)
     console.log('colorData', colorData)
 
-    const savedColors = await prisma.color.create({
+    const savedColors = await prisma.colorDev.create({
         data: colorData,
     })
 
