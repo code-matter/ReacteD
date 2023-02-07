@@ -1,4 +1,9 @@
-export const COLORS = [
+export type TColorChoice = {
+    name: string
+    hex: string
+}
+
+export const COLORS: TColorChoice[] = [
     { name: 'Bleu', hex: '#0000ff' },
     { name: 'Rouge', hex: '#ff0000' },
     { name: 'Vert', hex: '#00ff00' },

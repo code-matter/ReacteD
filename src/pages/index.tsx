@@ -4,7 +4,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { NextPageWithLayout } from './_app'
 import { Portal } from 'components'
 import { Modal } from 'antd'
-import { COLORS } from 'constants/colors'
+import { COLORS, TColorChoice } from 'constants/colors'
 import { Color } from '@prisma/client'
 import useColorStore from 'store/color'
 
@@ -17,19 +17,22 @@ import useColorStore from 'store/color'
 type THome = {}
 const MIN_TIME = 500
 const MAX_TIME = 5000
-const NB_TRIES = 5
 
 const Home: NextPageWithLayout = ({}: THome & any) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false)
     const [color, setColor] = useState<string>('')
     const [time, setTime] = useState(0)
-    const [tries, setTries] = useState(NB_TRIES)
+    const [tries, setTries] = useState(COLORS.length)
     const { colors, setColors } = useColorStore()
+    const [colorChoices, setColorChoices] = useState<TColorChoice[]>(COLORS)
 
     const countDown = () =>
         setTimeout(() => {
-            setColor(COLORS[Math.floor(Math.random() * COLORS.length)].name)
+            const tmpColors = colorChoices.filter(col => col.name !== color)
+            const tmpColor = tmpColors[Math.floor(Math.random() * tmpColors.length)].name
+            setColor(tmpColor)
             setTime(Date.now())
+            setColorChoices(tmpColors)
         }, Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
 
     const handleOk = () => {
@@ -42,8 +45,9 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     const reset = () => {
         setColor('')
         setTime(0)
-        setTries(NB_TRIES)
+        setTries(COLORS.length)
         setModalOpen(true)
+        setColorChoices(COLORS)
     }
 
     const handleClick = async (event: any) => {
@@ -87,12 +91,10 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
 
     useEffect(() => {
         setModalOpen(true)
-        setColor('')
         return () => {
             setModalOpen(false)
         }
     }, [])
-    console.log('cooolors', colors)
 
     return (
         <>
@@ -118,7 +120,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                         recommencer ce test autant de fois que vous voulez.
                         <br />
                         <br />
-                        Vous aurez {NB_TRIES} tentatives.
+                        Vous aurez {COLORS.length} tentatives.
                         <br />
                         <br />
                         Préparez-vous, une fois que vous aurez cliqué sur OK, une couleur devrait apparaître d'ici 10
@@ -131,7 +133,6 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                 <div
                     className='react--container'
                     style={{
-                        backgroundColor: COLORS.find(col => col.name === color)?.hex ?? '',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -140,6 +141,13 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                 >
                     {!color && <h1>PRÉPARE TOI!</h1>}
                 </div>
+                <style jsx>
+                    {`
+                        .react--container {
+                            background-color: ${COLORS.find(col => col.name === color)?.hex ?? ''};
+                        }
+                    `}
+                </style>
             </main>
         </>
     )

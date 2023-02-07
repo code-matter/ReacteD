@@ -10,7 +10,6 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     // Because of stringify with fetch
     const colorData: Color = JSON.parse(req.body)
-    console.log('colorData', colorData)
 
     const savedColors = await prisma.colorDev.create({
         data: colorData,
