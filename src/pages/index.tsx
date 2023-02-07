@@ -70,7 +70,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
 
     const saveColor = async (reactionTime: number) => {
         try {
-            const colorToSave: Color = {
+            const colorToSave = {
                 color,
                 reactionTime,
                 time: new Date().toLocaleDateString(),
