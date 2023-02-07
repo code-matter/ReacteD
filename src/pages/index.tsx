@@ -42,6 +42,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     const reset = () => {
         setColor('')
         setTime(0)
+        setTries(NB_TRIES)
         setModalOpen(true)
         console.log('colors', colors)
     }
