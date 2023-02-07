@@ -15,9 +15,9 @@ import useColorStore from 'store/color'
  */
 
 type THome = {}
-const MIN_TIME = 1000
+const MIN_TIME = 500
 const MAX_TIME = 5000
-const NB_TRIES = 2
+const NB_TRIES = 5
 
 const Home: NextPageWithLayout = ({}: THome & any) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false)
