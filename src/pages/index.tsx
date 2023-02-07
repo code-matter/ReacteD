@@ -123,7 +123,8 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                         Vous aurez {COLORS.length} tentatives.
                         <br />
                         <br />
-                        Préparez-vous, une fois que vous aurez cliqué sur OK, une couleur devrait apparaître d'ici 10
+                        Préparez-vous, une fois que vous aurez cliqué sur OK, une couleur devrait apparaître d'ici{' '}
+                        {MAX_TIME / 1000}
                         secondes.
                         <br />
                         <br />
