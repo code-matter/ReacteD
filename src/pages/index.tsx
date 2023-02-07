@@ -44,7 +44,6 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         setTime(0)
         setTries(NB_TRIES)
         setModalOpen(true)
-        console.log('colors', colors)
     }
 
     const handleClick = async (event: any) => {
@@ -93,6 +92,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
             setModalOpen(false)
         }
     }, [])
+    console.log('cooolors', colors)
 
     return (
         <>
