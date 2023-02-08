@@ -4,7 +4,9 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { NextPageWithLayout } from './_app'
 import { Portal } from 'components'
 import { Modal } from 'antd'
-import { COLORS } from 'constants/colors'
+import { COLORS, TColorChoice } from 'constants/colors'
+import { Color } from '@prisma/client'
+import useColorStore from 'store/color'
 
 /**
  * Component : Pages > Home
@@ -13,21 +15,24 @@ import { COLORS } from 'constants/colors'
  */
 
 type THome = {}
-const MIN_TIME = 2000
-const MAX_TIME = 10000
-const NB_TRIES = 5
+const MIN_TIME = 500
+const MAX_TIME = 5000
 
 const Home: NextPageWithLayout = ({}: THome & any) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false)
-    const [color, setColor] = useState<string | null>(null)
+    const [color, setColor] = useState<string>('')
     const [time, setTime] = useState(0)
-    const [tries, setTries] = useState(NB_TRIES)
-    const [results, setResults] = useState<any>([])
+    const [tries, setTries] = useState(COLORS.length)
+    const { colors, setColors } = useColorStore()
+    const [colorChoices, setColorChoices] = useState<TColorChoice[]>(COLORS)
 
     const countDown = () =>
         setTimeout(() => {
-            setColor(COLORS[Math.floor(Math.random() * COLORS.length)].name)
+            const tmpColors = colorChoices.filter(col => col.name !== color)
+            const tmpColor = tmpColors[Math.floor(Math.random() * tmpColors.length)].name
+            setColor(tmpColor)
             setTime(Date.now())
+            setColorChoices(tmpColors)
         }, Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
 
     const handleOk = () => {
@@ -38,9 +43,11 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         reset()
     }
     const reset = () => {
-        setColor(null)
+        setColor('')
         setTime(0)
+        setTries(COLORS.length)
         setModalOpen(true)
+        setColorChoices(COLORS)
     }
 
     const handleClick = async (event: any) => {
@@ -50,13 +57,12 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
             saveColor(reactionTime)
             const currentTry = tries - 1
             if (confirm(`Votre reaction est de ${reactionTime}ms`)) {
-                setResults([...results, { color: color, rt: reactionTime }])
                 setTries(currentTry)
                 if (currentTry <= 0) {
                     reset()
                     return
                 }
-                setColor(null)
+                setColor('')
                 handleOk()
             } else {
                 reset()
@@ -67,22 +73,24 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     }
 
     const saveColor = async (reactionTime: number) => {
-        const response = await fetch('/api/color', {
-            method: 'POST',
-            body: JSON.stringify({
+        try {
+            const colorToSave = {
                 color,
                 reactionTime,
-                time: new Date(),
-            }),
-        })
-        if (!response.ok) {
-            throw new Error(response.statusText)
+                time: new Date().toLocaleDateString(),
+            }
+            const response = await fetch('/api/color', {
+                method: 'POST',
+                body: JSON.stringify(colorToSave),
+            })
+            setColors(await response.json())
+        } catch (error) {
+            throw new Error("Une erreur est survenue, contacter l'administrateur")
         }
     }
 
     useEffect(() => {
         setModalOpen(true)
-        setColor(null)
         return () => {
             setModalOpen(false)
         }
@@ -91,7 +99,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     return (
         <>
             <Head>
-                <title>Reacted</title>
+                <title>DEV - Reacted</title>
                 <meta name='description' content='Reacted' />
                 <meta name='viewport' content='width=device-width, initial-scale=1' />
                 <link rel='icon' href='/favicon.ico' />
@@ -112,10 +120,11 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                         recommencer ce test autant de fois que vous voulez.
                         <br />
                         <br />
-                        Vous aurez {NB_TRIES} tentatives.
+                        Vous aurez {COLORS.length} tentatives.
                         <br />
                         <br />
-                        Préparez-vous, une fois que vous aurez cliqué sur OK, une couleur devrait apparaître d'ici 10
+                        Préparez-vous, une fois que vous aurez cliqué sur OK, une couleur devrait apparaître d'ici{' '}
+                        {MAX_TIME / 1000}
                         secondes.
                         <br />
                         <br />
@@ -125,7 +134,6 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                 <div
                     className='react--container'
                     style={{
-                        backgroundColor: COLORS.find(col => col.name === color)?.hex ?? '',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -134,6 +142,13 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                 >
                     {!color && <h1>PRÉPARE TOI!</h1>}
                 </div>
+                <style jsx>
+                    {`
+                        .react--container {
+                            background-color: ${COLORS.find(col => col.name === color)?.hex ?? ''};
+                        }
+                    `}
+                </style>
             </main>
         </>
     )

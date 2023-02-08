@@ -9,13 +9,13 @@ import { Tooltip, Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, XAxis
 
 type TDashboard = {
     colors: Color[]
-    max: Color
+    max: number
 }
 
 const prisma = new PrismaClient()
 
 export const getServerSideProps = async () => {
-    let colors = await prisma.color.groupBy({
+    let colors = await prisma.colorDev.groupBy({
         by: ['color'],
         _sum: {
             reactionTime: true,
@@ -28,14 +28,8 @@ export const getServerSideProps = async () => {
         },
     })
 
-    let domainMax = await prisma.color.findFirst({
-        orderBy: {
-            reactionTime: 'desc',
-        },
-    })
-
     return {
-        props: { colors, max: domainMax },
+        props: { colors },
     }
 }
 
@@ -43,6 +37,7 @@ const Dashboard = ({ colors, max }: TDashboard) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined)
     const [isLogged, setIsLogged] = useState<boolean>(false)
+    const [maxAvg, setMaxAvg] = useState<number>(0)
     useEffect(() => {
         setContainerWidth(containerRef.current?.clientWidth)
     }, [containerRef.current])
@@ -53,6 +48,8 @@ const Dashboard = ({ colors, max }: TDashboard) => {
     }
 
     useEffect(() => {
+        const max = _.maxBy(colors as any, (col: any) => col?._avg?.reactionTime)
+        if (max?._avg?.reactionTime) setMaxAvg(max?._avg?.reactionTime)
         return () => {
             setIsLogged(false)
         }
@@ -67,7 +64,6 @@ const Dashboard = ({ colors, max }: TDashboard) => {
                 <Button htmlType='submit'>Connexion</Button>
             </Form>
         )
-
     return (
         <div className='dashboard'>
             <Card title='Temps de réaction par couleur' ref={containerRef}>
@@ -83,7 +79,7 @@ const Dashboard = ({ colors, max }: TDashboard) => {
                     >
                         <CartesianGrid strokeDasharray='3 3' />
                         <XAxis dataKey={'color'} />
-                        <YAxis domain={[0, Math.round(max?.reactionTime / 100) * 100 + 100]} />
+                        <YAxis domain={[0, Math.round(maxAvg / 100) * 100 + 100]} />
                         <Tooltip
                             payload={colors}
                             labelFormatter={() => 'Temps de réaction moyen'}
