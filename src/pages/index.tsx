@@ -99,7 +99,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     return (
         <>
             <Head>
-                <title>DEV - Reacted</title>
+                <title>Reacted</title>
                 <meta name='description' content='Reacted' />
                 <meta name='viewport' content='width=device-width, initial-scale=1' />
                 <link rel='icon' href='/favicon.ico' />
