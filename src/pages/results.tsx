@@ -1,9 +1,10 @@
 import { Color } from '@prisma/client'
 import { Button } from 'antd'
+import { Portal } from 'components'
 import Card from 'components/elements/Card'
 import { COLORS } from 'constants/colors'
 import { useRouter } from 'next/router'
-import { useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import useColorStore from 'store/color'
 
@@ -73,6 +74,17 @@ const Results = () => {
             </Button>
         </div>
     )
+}
+
+/**
+ * getLayout
+ * ---
+ * Defines the component's layout
+ *
+ * @prop { ReactElement } page - Page to render within the layout
+ */
+Results.getLayout = function getLayout(page: ReactElement) {
+    return <Portal>{page}</Portal>
 }
 
 export default Results

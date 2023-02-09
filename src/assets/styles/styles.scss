@@ -15,7 +15,12 @@
 @import 'pages/dashboard';
 @import 'pages/results';
 
-// Components
-@import 'components/layouts/portal';
-@import 'components/modules/nav';
+// Elements
 @import 'components/elements/card';
+
+// Modules
+@import 'components/modules/footer';
+@import 'components/modules/nav';
+
+// Layouts
+@import 'components/layouts/portal';

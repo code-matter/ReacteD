@@ -1,4 +1,5 @@
 // import { Nav } from 'components'
+import Footer from 'components/modules/Footer'
 import { ReactElement } from 'react'
 
 /**
@@ -13,10 +14,15 @@ type TPortal = {
 
 const Portal = ({ children }: TPortal) => {
     return (
-        <div className='portal' data-cy='portal'>
-            {/* <Nav /> */}
-            {children}
-        </div>
+        <>
+            <main className='portal' data-cy='portal'>
+                {/* <Nav /> */}
+                {children}
+            </main>
+            <footer>
+                <Footer />
+            </footer>
+        </>
     )
 }
 

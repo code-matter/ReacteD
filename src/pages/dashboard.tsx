@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { Color, PrismaClient } from '@prisma/client'
 import { Button, Form, Input } from 'antd'
+import { Portal } from 'components'
 import Card from 'components/elements/Card'
 import { COLORS } from 'constants/colors'
 import _ from 'lodash'
-import { useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { Tooltip, Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, XAxis, YAxis, Label } from 'recharts'
 
 type TDashboard = {
@@ -57,12 +58,14 @@ const Dashboard = ({ colors, max }: TDashboard) => {
 
     if (!isLogged)
         return (
-            <Form layout='vertical' onFinish={handleFormSubmit}>
-                <Form.Item name='password' label="Code d'accès">
-                    <Input />
-                </Form.Item>
-                <Button htmlType='submit'>Connexion</Button>
-            </Form>
+            <div className='dashboard'>
+                <Form layout='vertical' onFinish={handleFormSubmit}>
+                    <Form.Item name='password' label="Code d'accès">
+                        <Input />
+                    </Form.Item>
+                    <Button htmlType='submit'>Connexion</Button>
+                </Form>
+            </div>
         )
     return (
         <div className='dashboard'>
@@ -79,7 +82,7 @@ const Dashboard = ({ colors, max }: TDashboard) => {
                     >
                         <CartesianGrid strokeDasharray='3 3' />
                         <XAxis dataKey={'color'} />
-                        <YAxis domain={[0, Math.round(maxAvg / 100) * 100 + 100]} />
+                        <YAxis />
                         <Tooltip
                             payload={colors}
                             labelFormatter={() => 'Temps de réaction moyen'}
@@ -111,6 +114,17 @@ const Dashboard = ({ colors, max }: TDashboard) => {
             </Card>
         </div>
     )
+}
+
+/**
+ * getLayout
+ * ---
+ * Defines the component's layout
+ *
+ * @prop { ReactElement } page - Page to render within the layout
+ */
+Dashboard.getLayout = function getLayout(page: ReactElement) {
+    return <Portal>{page}</Portal>
 }
 
 export default Dashboard
