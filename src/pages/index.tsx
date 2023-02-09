@@ -56,6 +56,14 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         try {
             clearTimeout(countDown())
             const reactionTime = Date.now() - time
+            // TODO: check for reactionTime > 1500
+            // if (reactionTime > 1500) {
+            //     setColor('')
+            //     setTime(0)
+            //     setTries(tries)
+            //     handleOk()
+            //     return
+            // }
             saveColor(reactionTime)
             const currentTry = tries - 1
             if (confirm(`Votre reaction est de ${reactionTime}ms`)) {

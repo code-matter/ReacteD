@@ -3,6 +3,7 @@ import { Button } from 'antd'
 import { Portal } from 'components'
 import Card from 'components/elements/Card'
 import { COLORS } from 'constants/colors'
+import _ from 'lodash'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
@@ -14,7 +15,10 @@ const Results = () => {
 
     const { colors } = useColorStore()
     const router = useRouter()
-    console.log('colors', colors)
+    console.log(
+        'colors',
+        _.sortBy(colors, col => col.color)
+    )
     useEffect(() => {
         if (colors.length <= 0) router.replace('/')
     }, [])
@@ -29,7 +33,7 @@ const Results = () => {
             <Card title='Temps de réaction par couleur' ref={containerRef}>
                 <ResponsiveContainer width='100%' height={400}>
                     <BarChart
-                        data={colors}
+                        data={_.sortBy(colors, col => col.color)}
                         margin={{
                             top: 5,
                             right: 30,
@@ -62,7 +66,7 @@ const Results = () => {
                             dataKey={'reactionTime'}
                             barSize={(containerWidth && containerWidth / (colors.length - 1)) || 50}
                         >
-                            {colors.map((color: Color) => (
+                            {_.sortBy(colors, col => col.color).map((color: Color) => (
                                 <Cell key={color.color} fill={COLORS.find(col => col.name === color.color)?.hex} />
                             ))}
                         </Bar>
