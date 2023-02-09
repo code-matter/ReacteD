@@ -1,4 +1,4 @@
-import { AiFillGithub, AiFillLinkedin } from 'react-icons/ai'
+import { AiFillGithub, AiFillLinkedin, AiFillYoutube } from 'react-icons/ai'
 const Footer = ({}) => {
     return (
         <div className='footer'>
@@ -9,6 +9,9 @@ const Footer = ({}) => {
                 </a>
                 <a href='https://www.linkedin.com/in/alex-caissy/' target='_blank' rel='noopener noreferrer'>
                     <AiFillLinkedin size={16} />
+                </a>
+                <a href='https://www.youtube.com/@droopfpv' target='_blank' rel='noopener noreferrer'>
+                    <AiFillYoutube size={16} />
                 </a>
             </div>
         </div>

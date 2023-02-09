@@ -87,7 +87,7 @@ const Dashboard = ({ colors, max }: TDashboard) => {
                             payload={colors}
                             labelFormatter={() => 'Temps de réaction moyen'}
                             separator=''
-                            formatter={(value: any, name: any, props: any) => [`${value} ms`, '']}
+                            formatter={(value: any) => [`${value} ms`, '']}
                             wrapperStyle={{
                                 outline: 'none',
                             }}
