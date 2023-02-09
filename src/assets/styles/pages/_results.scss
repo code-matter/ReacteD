@@ -1,0 +1,9 @@
+.results {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column nowrap;
+    button {
+        margin: 20px 0;
+    }
+}

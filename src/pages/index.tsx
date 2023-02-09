@@ -7,6 +7,7 @@ import { Modal } from 'antd'
 import { COLORS, TColorChoice } from 'constants/colors'
 import { Color } from '@prisma/client'
 import useColorStore from 'store/color'
+import { useRouter } from 'next/router'
 
 /**
  * Component : Pages > Home
@@ -23,8 +24,9 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     const [color, setColor] = useState<string>('')
     const [time, setTime] = useState(0)
     const [tries, setTries] = useState(COLORS.length)
-    const { colors, setColors } = useColorStore()
+    const { resetColors, setColors } = useColorStore()
     const [colorChoices, setColorChoices] = useState<TColorChoice[]>(COLORS)
+    const router = useRouter()
 
     const countDown = () =>
         setTimeout(() => {
@@ -59,7 +61,9 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
             if (confirm(`Votre reaction est de ${reactionTime}ms`)) {
                 setTries(currentTry)
                 if (currentTry <= 0) {
-                    reset()
+                    // reset()
+                    setModalOpen(false)
+                    router.push('results')
                     return
                 }
                 setColor('')
@@ -91,8 +95,9 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
 
     useEffect(() => {
         setModalOpen(true)
+        resetColors()
         return () => {
-            setModalOpen(false)
+            reset()
         }
     }, [])
 
@@ -124,8 +129,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                         <br />
                         <br />
                         Préparez-vous, une fois que vous aurez cliqué sur OK, une couleur devrait apparaître d'ici{' '}
-                        {MAX_TIME / 1000}
-                        secondes.
+                        {MAX_TIME / 1000} secondes.
                         <br />
                         <br />
                         Cliquez n'importe où dès que vous voyez une couleur apparaître.
