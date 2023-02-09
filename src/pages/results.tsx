@@ -15,10 +15,6 @@ const Results = () => {
 
     const { colors } = useColorStore()
     const router = useRouter()
-    console.log(
-        'colors',
-        _.sortBy(colors, col => col.color)
-    )
     useEffect(() => {
         if (colors.length <= 0) router.replace('/')
     }, [])
