@@ -24,7 +24,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     const [color, setColor] = useState<string>('')
     const [time, setTime] = useState(0)
     const [tries, setTries] = useState(COLORS.length)
-    const { resetColors, setColors } = useColorStore()
+    const { resetColors, addColor } = useColorStore()
     const [colorChoices, setColorChoices] = useState<TColorChoice[]>(COLORS)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const router = useRouter()
@@ -97,7 +97,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                 method: 'POST',
                 body: JSON.stringify(colorToSave),
             })
-            setColors(await response.json())
+            addColor(await response.json())
         } catch (error) {
             throw new Error("Une erreur est survenue, contacter l'administrateur")
         }

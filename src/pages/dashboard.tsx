@@ -38,7 +38,7 @@ const Dashboard = ({ colors, max }: TDashboard) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined)
     const [isLogged, setIsLogged] = useState<boolean>(false)
-    const [maxAvg, setMaxAvg] = useState<number>(0)
+
     useEffect(() => {
         setContainerWidth(containerRef.current?.clientWidth)
     }, [containerRef.current])
@@ -47,14 +47,6 @@ const Dashboard = ({ colors, max }: TDashboard) => {
         if (!password) return
         if (password === 'droopFPV') setIsLogged(true)
     }
-
-    useEffect(() => {
-        const max = _.maxBy(colors as any, (col: any) => col?._avg?.reactionTime)
-        if (max?._avg?.reactionTime) setMaxAvg(max?._avg?.reactionTime)
-        return () => {
-            setIsLogged(false)
-        }
-    }, [])
 
     if (!isLogged)
         return (

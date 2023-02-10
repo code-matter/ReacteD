@@ -10,7 +10,7 @@ import { persist, createJSONStorage, PersistOptions } from 'zustand/middleware'
 
 export type ColorStore = {
     colors: Color[]
-    setColors: (data: Color) => void
+    addColor: (data: Color) => void
     resetColors: () => void
 }
 
@@ -19,7 +19,7 @@ export type ColorStore = {
 const useColorStore = create<ColorStore>(
     set => ({
         colors: [],
-        setColors: (data: Color) => set(state => ({ colors: [...state.colors, data] })),
+        addColor: (data: Color) => set(state => ({ colors: [...state.colors, data] })),
         resetColors: () => set(() => ({ colors: [] })),
     })
     // (persist as MyPersist)(
