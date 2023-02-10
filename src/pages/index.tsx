@@ -138,7 +138,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                     }}
                     onClick={color ? handleClick : () => null}
                 >
-                    <Spin spinning={isLoading}>{!color && <h1>PRÉPARE TOI!</h1>}</Spin>
+                    <Spin spinning={isLoading}>{!color && <h1>PRÉPAREZ-VOUS!</h1>}</Spin>
                 </div>
                 <style jsx>
                     {`
