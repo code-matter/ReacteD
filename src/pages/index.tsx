@@ -3,7 +3,7 @@ import Head from 'next/head'
 import { ReactElement, useEffect, useState } from 'react'
 import type { NextPageWithLayout } from './_app'
 import { Portal } from 'components'
-import { Modal } from 'antd'
+import { Modal, Spin } from 'antd'
 import { COLORS, TColorChoice } from 'constants/colors'
 import { Color } from '@prisma/client'
 import useColorStore from 'store/color'
@@ -26,6 +26,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     const [tries, setTries] = useState(COLORS.length)
     const { resetColors, setColors } = useColorStore()
     const [colorChoices, setColorChoices] = useState<TColorChoice[]>(COLORS)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const router = useRouter()
 
     const countDown = (isTooLong?: boolean) =>
@@ -71,6 +72,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                 if (currentTry <= 0) {
                     // reset()
                     setModalOpen(false)
+                    setIsLoading(true)
                     router.push('results')
                     return
                 }
@@ -106,6 +108,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         resetColors()
         return () => {
             reset()
+            setIsLoading(false)
         }
     }, [])
 
@@ -152,7 +155,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                     }}
                     onClick={color ? handleClick : () => null}
                 >
-                    {!color && <h1>PRÉPARE TOI!</h1>}
+                    <Spin spinning={isLoading}>{!color && <h1>PRÉPARE TOI!</h1>}</Spin>
                 </div>
                 <style jsx>
                     {`
