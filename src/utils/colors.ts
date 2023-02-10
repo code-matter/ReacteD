@@ -1,7 +1,4 @@
-import { Color } from '@prisma/client'
-
-// eslint-disable-next-line no-unused-vars
-export const saveColor = async (reactionTime: number, color: string, addColor: (data: Color) => void) => {
+export const saveColor = async (reactionTime: number, color: string, addColor: any) => {
     try {
         const colorToSave = {
             color,

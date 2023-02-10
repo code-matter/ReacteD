@@ -1,11 +1,9 @@
-/* eslint-disable no-unused-vars */
 import Head from 'next/head'
 import { ReactElement, useEffect, useState } from 'react'
 import type { NextPageWithLayout } from './_app'
 import { Portal } from 'components'
 import { Modal, Spin } from 'antd'
 import { COLORS, TColorChoice } from 'constants/colors'
-import { Color } from '@prisma/client'
 import useColorStore from 'store/color'
 import { useRouter } from 'next/router'
 import { saveColor } from 'utils'
@@ -57,12 +55,12 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         setColorChoices(COLORS)
     }
 
-    const handleClick = async (event: any) => {
+    const handleClick = async () => {
         try {
             clearTimeout(countDown())
             const reactionTime = Date.now() - time
 
-            if (reactionTime > 1500) {
+            if (reactionTime > 1000) {
                 alert('Trop long, on réessaye!')
                 setColor('')
                 handleOk(true)
