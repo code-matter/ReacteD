@@ -59,7 +59,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         try {
             clearTimeout(countDown())
             const reactionTime = Date.now() - time
-            if (reactionTime > 1500) {
+            if (reactionTime > 1000) {
                 alert('Trop long, on réessaye!')
                 setColor('')
                 handleOk(true)
