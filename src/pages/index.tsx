@@ -3,10 +3,11 @@ import Head from 'next/head'
 import { ReactElement, useEffect, useState } from 'react'
 import type { NextPageWithLayout } from './_app'
 import { Portal } from 'components'
-import { Modal } from 'antd'
+import { Modal, Spin } from 'antd'
 import { COLORS, TColorChoice } from 'constants/colors'
 import { Color } from '@prisma/client'
 import useColorStore from 'store/color'
+import { useRouter } from 'next/router'
 
 /**
  * Component : Pages > Home
@@ -23,21 +24,25 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     const [color, setColor] = useState<string>('')
     const [time, setTime] = useState(0)
     const [tries, setTries] = useState(COLORS.length)
-    const { colors, setColors } = useColorStore()
+    const { resetColors, setColors } = useColorStore()
     const [colorChoices, setColorChoices] = useState<TColorChoice[]>(COLORS)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const router = useRouter()
 
-    const countDown = () =>
+    const countDown = (isTooLong?: boolean) =>
         setTimeout(() => {
-            const tmpColors = colorChoices.filter(col => col.name !== color)
-            const tmpColor = tmpColors[Math.floor(Math.random() * tmpColors.length)].name
+            const tmpColors = isTooLong ? colorChoices : colorChoices.filter(col => col.name !== color)
+            const tmpColor = isTooLong
+                ? colorChoices[Math.floor(Math.random() * tmpColors.length)].name
+                : tmpColors[Math.floor(Math.random() * tmpColors.length)].name
             setColor(tmpColor)
             setTime(Date.now())
             setColorChoices(tmpColors)
         }, Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
 
-    const handleOk = () => {
+    const handleOk = (isTooLong?: boolean) => {
         setModalOpen(false)
-        countDown()
+        countDown(isTooLong)
     }
     const handleCancel = () => {
         reset()
@@ -54,12 +59,21 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         try {
             clearTimeout(countDown())
             const reactionTime = Date.now() - time
+            if (reactionTime > 1500) {
+                alert('Trop long, on réessaye!')
+                setColor('')
+                handleOk(true)
+                return
+            }
             saveColor(reactionTime)
             const currentTry = tries - 1
             if (confirm(`Votre reaction est de ${reactionTime}ms`)) {
                 setTries(currentTry)
                 if (currentTry <= 0) {
-                    reset()
+                    // reset()
+                    setModalOpen(false)
+                    setIsLoading(true)
+                    router.push('results')
                     return
                 }
                 setColor('')
@@ -91,8 +105,10 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
 
     useEffect(() => {
         setModalOpen(true)
+        resetColors()
         return () => {
-            setModalOpen(false)
+            reset()
+            setIsLoading(false)
         }
     }, [])
 
@@ -108,7 +124,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                 <Modal
                     title='Mesure ton temps de réaction!'
                     open={modalOpen}
-                    onOk={handleOk}
+                    onOk={() => handleOk()}
                     onCancel={handleCancel}
                     closable={false}
                     maskClosable={false}
@@ -124,8 +140,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                         <br />
                         <br />
                         Préparez-vous, une fois que vous aurez cliqué sur OK, une couleur devrait apparaître d'ici{' '}
-                        {MAX_TIME / 1000}
-                        secondes.
+                        {MAX_TIME / 1000} secondes.
                         <br />
                         <br />
                         Cliquez n'importe où dès que vous voyez une couleur apparaître.
@@ -140,7 +155,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                     }}
                     onClick={color ? handleClick : () => null}
                 >
-                    {!color && <h1>PRÉPARE TOI!</h1>}
+                    <Spin spinning={isLoading}>{!color && <h1>PRÉPARE TOI!</h1>}</Spin>
                 </div>
                 <style jsx>
                     {`
