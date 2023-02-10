@@ -35,7 +35,6 @@ export const getServerSideProps = async () => {
 }
 
 const Dashboard = ({ colors, max }: TDashboard) => {
-    console.log('colors', colors)
     const containerRef = useRef<HTMLDivElement>(null)
     const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined)
     const [isLogged, setIsLogged] = useState<boolean>(false)
