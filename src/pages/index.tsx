@@ -8,6 +8,7 @@ import { COLORS, TColorChoice } from 'constants/colors'
 import { Color } from '@prisma/client'
 import useColorStore from 'store/color'
 import { useRouter } from 'next/router'
+import { saveColor } from 'utils'
 
 /**
  * Component : Pages > Home
@@ -21,6 +22,7 @@ const MAX_TIME = 5000
 
 const Home: NextPageWithLayout = ({}: THome & any) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false)
+
     const [color, setColor] = useState<string>('')
     const [time, setTime] = useState(0)
     const [tries, setTries] = useState(COLORS.length)
@@ -59,13 +61,14 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         try {
             clearTimeout(countDown())
             const reactionTime = Date.now() - time
+
             if (reactionTime > 1500) {
                 alert('Trop long, on réessaye!')
                 setColor('')
                 handleOk(true)
                 return
             }
-            saveColor(reactionTime)
+            saveColor(reactionTime, color, addColor)
             const currentTry = tries - 1
             if (confirm(`Votre reaction est de ${reactionTime}ms`)) {
                 setTries(currentTry)
@@ -83,23 +86,6 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
             }
         } catch (error) {
             throw new Error("Veuillez contacter l'administrateur")
-        }
-    }
-
-    const saveColor = async (reactionTime: number) => {
-        try {
-            const colorToSave = {
-                color,
-                reactionTime,
-                time: new Date().toLocaleDateString(),
-            }
-            const response = await fetch('/api/color', {
-                method: 'POST',
-                body: JSON.stringify(colorToSave),
-            })
-            addColor(await response.json())
-        } catch (error) {
-            throw new Error("Une erreur est survenue, contacter l'administrateur")
         }
     }
 

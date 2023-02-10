@@ -22,3 +22,10 @@ model ColorDev {
   reactionTime Int
   time         String 
 }
+
+model ColorAlex {
+  id           String @id @default(cuid())
+  color        String
+  reactionTime Int
+  time         String 
+}
