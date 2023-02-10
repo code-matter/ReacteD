@@ -16,7 +16,7 @@ type TDashboard = {
 const prisma = new PrismaClient()
 
 export const getServerSideProps = async () => {
-    let colors = await prisma.colorAlex.groupBy({
+    let colors = await prisma.colorDev.groupBy({
         by: ['color'],
         _sum: {
             reactionTime: true,
