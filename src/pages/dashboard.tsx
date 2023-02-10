@@ -16,7 +16,7 @@ type TDashboard = {
 const prisma = new PrismaClient()
 
 export const getServerSideProps = async () => {
-    let colors = await prisma.color.groupBy({
+    let colors = await prisma.colorDev.groupBy({
         by: ['color'],
         _sum: {
             reactionTime: true,
@@ -35,10 +35,11 @@ export const getServerSideProps = async () => {
 }
 
 const Dashboard = ({ colors, max }: TDashboard) => {
+    console.log('colors', colors)
     const containerRef = useRef<HTMLDivElement>(null)
     const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined)
     const [isLogged, setIsLogged] = useState<boolean>(false)
-    const [maxAvg, setMaxAvg] = useState<number>(0)
+
     useEffect(() => {
         setContainerWidth(containerRef.current?.clientWidth)
     }, [containerRef.current])
@@ -47,14 +48,6 @@ const Dashboard = ({ colors, max }: TDashboard) => {
         if (!password) return
         if (password === 'droopFPV') setIsLogged(true)
     }
-
-    useEffect(() => {
-        const max = _.maxBy(colors as any, (col: any) => col?._avg?.reactionTime)
-        if (max?._avg?.reactionTime) setMaxAvg(max?._avg?.reactionTime)
-        return () => {
-            setIsLogged(false)
-        }
-    }, [])
 
     if (!isLogged)
         return (
@@ -69,48 +62,52 @@ const Dashboard = ({ colors, max }: TDashboard) => {
         )
     return (
         <div className='dashboard'>
-            <Card title='Temps de réaction par couleur' ref={containerRef}>
-                <ResponsiveContainer width='100%' height={500}>
-                    <BarChart
-                        data={colors}
-                        margin={{
-                            top: 5,
-                            right: 30,
-                            left: 20,
-                            bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray='3 3' />
-                        <XAxis dataKey={'color'} />
-                        <YAxis />
-                        <Tooltip
-                            payload={colors}
-                            labelFormatter={() => 'Temps de réaction moyen'}
-                            separator=''
-                            formatter={(value: any) => [`${value} ms`, '']}
-                            wrapperStyle={{
-                                outline: 'none',
+            <Card title={colors.length <= 0 ? '' : 'Temps de réaction par couleur'} ref={containerRef}>
+                {colors.length <= 0 ? (
+                    <h1>Aucune donnée</h1>
+                ) : (
+                    <ResponsiveContainer width='100%' height={500}>
+                        <BarChart
+                            data={colors}
+                            margin={{
+                                top: 5,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
                             }}
-                            contentStyle={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                fontSize: 14,
-                                fontWeight: 600,
-                            }}
-                            labelStyle={{ fontSize: 18, fontWeight: 600 }}
-                        />
-                        <Bar
-                            dataKey={'_avg.reactionTime'}
-                            barSize={(containerWidth && containerWidth / (colors.length - 1)) || 50}
                         >
-                            {colors.map((color: Color) => (
-                                <Cell key={color.color} fill={COLORS.find(col => col.name === color.color)?.hex} />
-                            ))}
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
+                            <CartesianGrid strokeDasharray='3 3' />
+                            <XAxis dataKey={'color'} />
+                            <YAxis />
+                            <Tooltip
+                                payload={colors}
+                                labelFormatter={() => 'Temps de réaction moyen'}
+                                separator=''
+                                formatter={(value: any) => [`${value} ms`, '']}
+                                wrapperStyle={{
+                                    outline: 'none',
+                                }}
+                                contentStyle={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    fontSize: 14,
+                                    fontWeight: 600,
+                                }}
+                                labelStyle={{ fontSize: 18, fontWeight: 600 }}
+                            />
+                            <Bar
+                                dataKey={'_avg.reactionTime'}
+                                barSize={(containerWidth && containerWidth / (colors.length - 1)) || 50}
+                            >
+                                {colors.map((color: Color) => (
+                                    <Cell key={color.color} fill={COLORS.find(col => col.name === color.color)?.hex} />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
             </Card>
         </div>
     )
