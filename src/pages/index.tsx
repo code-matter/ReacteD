@@ -28,18 +28,20 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     const [colorChoices, setColorChoices] = useState<TColorChoice[]>(COLORS)
     const router = useRouter()
 
-    const countDown = () =>
+    const countDown = (isTooLong?: boolean) =>
         setTimeout(() => {
-            const tmpColors = colorChoices.filter(col => col.name !== color)
-            const tmpColor = tmpColors[Math.floor(Math.random() * tmpColors.length)].name
+            const tmpColors = isTooLong ? colorChoices : colorChoices.filter(col => col.name !== color)
+            const tmpColor = isTooLong
+                ? colorChoices[Math.floor(Math.random() * tmpColors.length)].name
+                : tmpColors[Math.floor(Math.random() * tmpColors.length)].name
             setColor(tmpColor)
             setTime(Date.now())
             setColorChoices(tmpColors)
         }, Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
 
-    const handleOk = () => {
+    const handleOk = (isTooLong?: boolean) => {
         setModalOpen(false)
-        countDown()
+        countDown(isTooLong)
     }
     const handleCancel = () => {
         reset()
@@ -56,14 +58,12 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         try {
             clearTimeout(countDown())
             const reactionTime = Date.now() - time
-            // TODO: check for reactionTime > 1500
-            // if (reactionTime > 1500) {
-            //     setColor('')
-            //     setTime(0)
-            //     setTries(tries)
-            //     handleOk()
-            //     return
-            // }
+            if (reactionTime > 1500) {
+                alert('Trop long, on réessaye!')
+                setColor('')
+                handleOk(true)
+                return
+            }
             saveColor(reactionTime)
             const currentTry = tries - 1
             if (confirm(`Votre reaction est de ${reactionTime}ms`)) {
@@ -121,7 +121,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                 <Modal
                     title='Mesure ton temps de réaction!'
                     open={modalOpen}
-                    onOk={handleOk}
+                    onOk={() => handleOk()}
                     onCancel={handleCancel}
                     closable={false}
                     maskClosable={false}
