@@ -1,4 +1,4 @@
-export const saveColor = async (reactionTime: number, color: string, addColor: any) => {
+export const saveColor = async (reactionTime: number, color: string | undefined, addColor: any) => {
     try {
         const colorToSave = {
             color,

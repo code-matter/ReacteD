@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import type { NextPageWithLayout } from './_app'
 import { Portal } from 'components'
 import { Modal, Spin } from 'antd'
@@ -21,26 +21,32 @@ const MAX_TIME = 5000
 const Home: NextPageWithLayout = ({}: THome & any) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false)
 
-    const [color, setColor] = useState<string>('')
+    const [color, setColor] = useState<string | undefined>(undefined)
     const [time, setTime] = useState(0)
     const [tries, setTries] = useState(COLORS.length)
     const { resetColors, addColor } = useColorStore()
     const [colorChoices, setColorChoices] = useState<TColorChoice[]>(COLORS)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const router = useRouter()
+    // const [delay, setDelay] = useState<number>(Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
+    const delayRef = useRef(Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
 
-    const countDown = (isTooLong?: boolean) =>
-        setTimeout(() => {
-            const tmpColors = isTooLong ? colorChoices : colorChoices.filter(col => col.name !== color)
-            const tmpColor = isTooLong
-                ? colorChoices[Math.floor(Math.random() * tmpColors.length)].name
-                : tmpColors[Math.floor(Math.random() * tmpColors.length)].name
-            setColor(tmpColor)
-            setTime(Date.now())
-            setColorChoices(tmpColors)
-        }, Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
+    const countDown = useCallback(
+        (isTooLong?: boolean) =>
+            setTimeout(() => {
+                const tmpColors = isTooLong ? colorChoices : colorChoices.filter(col => col.name !== color)
+                const tmpColor = isTooLong
+                    ? colorChoices[Math.floor(Math.random() * tmpColors.length)].name
+                    : tmpColors[Math.floor(Math.random() * tmpColors.length)].name
+                setColor(tmpColor)
+                setTime(Date.now())
+                setColorChoices(tmpColors)
+            }, delayRef.current),
+        [delayRef.current, colorChoices]
+    )
 
     const handleOk = (isTooLong?: boolean) => {
+        if (isTooLong) delayRef.current = Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME)
         setModalOpen(false)
         countDown(isTooLong)
     }
@@ -48,7 +54,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         reset()
     }
     const reset = () => {
-        setColor('')
+        setColor(undefined)
         setTime(0)
         setTries(COLORS.length)
         setModalOpen(true)
@@ -61,10 +67,16 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
             const reactionTime = Date.now() - time
             if (reactionTime > 1000) {
                 alert('Trop long, on réessaye!')
-                setColor('')
+                setColor(undefined)
                 handleOk(true)
                 return
             }
+            // if (Date.now() > time + delay) {
+            //     alert('CHEATER!!')
+            //     setColor(undefined)
+            //     handleOk(true)
+            //     return
+            // }
             saveColor(reactionTime, color, addColor)
             const currentTry = tries - 1
             if (confirm(`Votre reaction est de ${reactionTime}ms`)) {
@@ -76,7 +88,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                     router.push('results')
                     return
                 }
-                setColor('')
+                setColor(undefined)
                 handleOk()
             } else {
                 reset()
@@ -84,6 +96,14 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         } catch (error) {
             throw new Error("Veuillez contacter l'administrateur")
         }
+    }
+
+    const stupid = () => {
+        clearTimeout(countDown())
+        if (confirm('Tricheur! Ne triche pas!')) {
+            setColor(undefined)
+            handleOk(true)
+        } else router.push('results')
     }
 
     useEffect(() => {
@@ -136,7 +156,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
-                    onClick={color ? handleClick : () => null}
+                    onClick={color ? handleClick : stupid}
                 >
                     <Spin spinning={isLoading}>{!color && <h1>PRÉPAREZ-VOUS!</h1>}</Spin>
                 </div>
