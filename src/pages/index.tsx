@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Head from 'next/head'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import type { NextPageWithLayout } from './_app'
@@ -20,98 +21,64 @@ const MAX_TIME = 5000
 
 const Home: NextPageWithLayout = ({}: THome & any) => {
     const [modalOpen, setModalOpen] = useState<boolean>(false)
-
+    const delay = Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME)
     const [color, setColor] = useState<string | undefined>(undefined)
-    const [time, setTime] = useState(0)
-    const [tries, setTries] = useState(COLORS.length)
-    const { resetColors, addColor } = useColorStore()
     const [colorChoices, setColorChoices] = useState<TColorChoice[]>(COLORS)
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [time, setTime] = useState<number>(0)
+
     const router = useRouter()
-    // const [delay, setDelay] = useState<number>(Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
-    const delayRef = useRef(Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME))
 
-    const countDown = useCallback(
-        (isTooLong?: boolean) =>
-            setTimeout(() => {
-                const tmpColors = isTooLong ? colorChoices : colorChoices.filter(col => col.name !== color)
-                const tmpColor = isTooLong
-                    ? colorChoices[Math.floor(Math.random() * tmpColors.length)].name
-                    : tmpColors[Math.floor(Math.random() * tmpColors.length)].name
-                setColor(tmpColor)
-                setTime(Date.now())
-                setColorChoices(tmpColors)
-            }, delayRef.current),
-        [delayRef.current, colorChoices]
-    )
+    console.log('delay', delay)
+    const countDown = (shouldReset?: boolean) => {
+        return setTimeout(() => {
+            updateColors(shouldReset)
+        }, delay)
+    }
 
-    const handleOk = (isTooLong?: boolean) => {
-        if (isTooLong) delayRef.current = Math.floor(Math.random() * (MAX_TIME - MIN_TIME + 1) + MIN_TIME)
-        setModalOpen(false)
-        countDown(isTooLong)
+    const updateColors = (shouldReset?: boolean) => {
+        const tmpColors = shouldReset ? colorChoices : colorChoices.filter(col => col.name !== color)
+        const tmpColor = shouldReset
+            ? colorChoices[Math.floor(Math.random() * tmpColors.length)].name
+            : tmpColors[Math.floor(Math.random() * tmpColors.length)].name
+        setTime(Date.now())
+        setColor(tmpColor)
+        setColorChoices(tmpColors)
     }
-    const handleCancel = () => {
-        reset()
-    }
-    const reset = () => {
+
+    const handleOk = (shouldReset?: boolean) => {
         setColor(undefined)
-        setTime(0)
-        setTries(COLORS.length)
-        setModalOpen(true)
-        setColorChoices(COLORS)
+        setModalOpen(false)
+        countDown(shouldReset)
     }
 
-    const handleClick = async () => {
-        try {
-            clearTimeout(countDown())
-            const reactionTime = Date.now() - time
-            if (reactionTime > 1000) {
-                alert('Trop long, on réessaye!')
-                setColor(undefined)
-                handleOk(true)
-                return
-            }
-            // if (Date.now() > time + delay) {
-            //     alert('CHEATER!!')
-            //     setColor(undefined)
-            //     handleOk(true)
-            //     return
-            // }
-            saveColor(reactionTime, color, addColor)
-            const currentTry = tries - 1
-            if (confirm(`Votre reaction est de ${reactionTime}ms`)) {
-                setTries(currentTry)
-                if (currentTry <= 0) {
-                    // reset()
-                    setModalOpen(false)
-                    setIsLoading(true)
-                    router.push('results')
-                    return
-                }
-                setColor(undefined)
-                handleOk()
-            } else {
-                reset()
-            }
-        } catch (error) {
-            throw new Error("Veuillez contacter l'administrateur")
-        }
-    }
-
-    const stupid = () => {
+    const handleClick = () => {
+        console.log('color', color)
         clearTimeout(countDown())
-        if (confirm('Tricheur! Ne triche pas!')) {
-            setColor(undefined)
-            handleOk(true)
+
+        if (!color) {
+            if (confirm('TRICHEUR!')) {
+                handleOk(true)
+            }
+            return
+        }
+        const reactionTime = Date.now() - time
+        // if (reactionTime > 1000) {
+        //     alert('Trop long!')
+        //     handleOk(true)
+        // }
+        if (confirm(`Votre temps de réaction est de ${reactionTime}ms`)) {
+            handleOk()
         } else router.push('results')
+        console.log('reactionTime', reactionTime)
     }
 
     useEffect(() => {
         setModalOpen(true)
-        resetColors()
         return () => {
-            reset()
+            setModalOpen(false)
             setIsLoading(false)
+            clearTimeout(countDown())
         }
     }, [])
 
@@ -128,7 +95,6 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                     title='Mesure ton temps de réaction!'
                     open={modalOpen}
                     onOk={() => handleOk()}
-                    onCancel={handleCancel}
                     closable={false}
                     maskClosable={false}
                     cancelButtonProps={{ style: { display: 'none' } }}
@@ -156,7 +122,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
-                    onClick={color ? handleClick : stupid}
+                    onClick={handleClick}
                 >
                     <Spin spinning={isLoading}>{!color && <h1>PRÉPAREZ-VOUS!</h1>}</Spin>
                 </div>
