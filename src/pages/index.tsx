@@ -25,52 +25,35 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     const [color, setColor] = useState<string | undefined>(undefined)
     const [colorChoices, setColorChoices] = useState<TColorChoice[]>(COLORS)
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [time, setTime] = useState<number>(0)
+    const [updateTime, setUpdateTime] = useState<number>(0)
+    const [tries, setTries] = useState(colorChoices.length)
+    const [start, setStart] = useState<boolean>(false)
 
     const router = useRouter()
 
-    console.log('delay', delay)
-    const countDown = (shouldReset?: boolean) => {
-        return setTimeout(() => {
-            updateColors(shouldReset)
-        }, delay)
-    }
-
-    const updateColors = (shouldReset?: boolean) => {
-        const tmpColors = shouldReset ? colorChoices : colorChoices.filter(col => col.name !== color)
-        const tmpColor = shouldReset
-            ? colorChoices[Math.floor(Math.random() * tmpColors.length)].name
-            : tmpColors[Math.floor(Math.random() * tmpColors.length)].name
-        setTime(Date.now())
+    const updateColors = () => {
+        const tmpColors = colorChoices.filter(col => col.name !== color)
+        const tmpColor = tmpColors[Math.floor(Math.random() * tmpColors.length)].name
+        setUpdateTime(Date.now())
         setColor(tmpColor)
         setColorChoices(tmpColors)
+        setStart(false)
     }
 
-    const handleOk = (shouldReset?: boolean) => {
-        setColor(undefined)
+    // When OK on modal
+    const handleOk = () => {
         setModalOpen(false)
-        countDown(shouldReset)
+        setStart(true)
+        setColor(undefined)
     }
 
     const handleClick = () => {
-        console.log('color', color)
-        clearTimeout(countDown())
-
-        if (!color) {
-            if (confirm('TRICHEUR!')) {
-                handleOk(true)
-            }
-            return
-        }
-        const reactionTime = Date.now() - time
-        // if (reactionTime > 1000) {
-        //     alert('Trop long!')
-        //     handleOk(true)
-        // }
+        const remainingTries = tries - 1
+        setTries(remainingTries)
+        const reactionTime = Date.now() - updateTime
         if (confirm(`Votre temps de réaction est de ${reactionTime}ms`)) {
             handleOk()
         } else router.push('results')
-        console.log('reactionTime', reactionTime)
     }
 
     useEffect(() => {
@@ -78,9 +61,20 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         return () => {
             setModalOpen(false)
             setIsLoading(false)
-            clearTimeout(countDown())
         }
     }, [])
+
+    useEffect(() => {
+        if (!start) return
+        const countDown = setTimeout(() => {
+            updateColors()
+        }, delay)
+
+        return () => {
+            console.log('Return Ran')
+            clearTimeout(countDown)
+        }
+    }, [start])
 
     return (
         <>
@@ -122,7 +116,15 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
-                    onClick={handleClick}
+                    onClick={
+                        color
+                            ? handleClick
+                            : () => {
+                                  setStart(state => !state)
+                                  if (confirm('tricheur')) setTimeout(() => setStart(state => !state), 200)
+                                  else router.push('results')
+                              }
+                    }
                 >
                     <Spin spinning={isLoading}>{!color && <h1>PRÉPAREZ-VOUS!</h1>}</Spin>
                 </div>
