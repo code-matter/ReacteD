@@ -32,12 +32,15 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
     const router = useRouter()
 
     const updateColors = () => {
+        console.log('color', color)
         const tmpColors = colorChoices.filter(col => col.name !== color)
         const tmpColor = tmpColors[Math.floor(Math.random() * tmpColors.length)].name
+        console.log('tmpColors', tmpColors)
+        console.log('tmpColor', tmpColor)
         setUpdateTime(Date.now())
         setColor(tmpColor)
         setColorChoices(tmpColors)
-        setStart(false)
+        setStart(state => !state)
     }
 
     // When OK on modal
@@ -52,6 +55,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         setTries(remainingTries)
         const reactionTime = Date.now() - updateTime
         if (confirm(`Votre temps de réaction est de ${reactionTime}ms`)) {
+            setStart(false)
             handleOk()
         } else router.push('results')
     }
@@ -71,7 +75,6 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
         }, delay)
 
         return () => {
-            console.log('Return Ran')
             clearTimeout(countDown)
         }
     }, [start])
@@ -116,15 +119,7 @@ const Home: NextPageWithLayout = ({}: THome & any) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
-                    onClick={
-                        color
-                            ? handleClick
-                            : () => {
-                                  setStart(state => !state)
-                                  if (confirm('tricheur')) setTimeout(() => setStart(state => !state), 200)
-                                  else router.push('results')
-                              }
-                    }
+                    onClick={handleClick}
                 >
                     <Spin spinning={isLoading}>{!color && <h1>PRÉPAREZ-VOUS!</h1>}</Spin>
                 </div>
